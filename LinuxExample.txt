@@ -1,0 +1,51 @@
+local Linux = loadstring(game:HttpGet("URL_DA_SUA_LIBRARY"))()
+
+local UI = Linux.Create({
+    Name = "Linux UI",
+    SizeMobile = UDim2.new(0, 550, 0, 345),
+    SizePC = UDim2.new(0, 600, 0, 400)
+})
+
+local MainTab = UI:Tab({
+    Name = "Principal"
+})
+
+MainTab:Button({
+    Name = "Botão Exemplo",
+    Callback = function()
+        print("Botão clicado!")
+    end
+})
+
+MainTab:Toggle({
+    Name = "Toggle Exemplo",
+    Default = false,
+    Callback = function(state)
+        print("Toggle:", state)
+    end
+})
+
+MainTab:Slider({
+    Name = "Slider Exemplo",
+    Min = 0,
+    Max = 100,
+    Default = 50,
+    Callback = function(value)
+        print("Valor:", value)
+    end
+})
+
+MainTab:Dropdown({
+    Name = "Dropdown Exemplo",
+    Options = {"Opção 1", "Opção 2", "Opção 3"},
+    Default = "Opção 1",
+    Callback = function(selected)
+        print("Selecionado:", selected)
+    end
+})
+
+local SecondTab = UI:Tab({
+    Name = "Secundário"
+})
+
+-- Adicione mais elementos conforme necessário
