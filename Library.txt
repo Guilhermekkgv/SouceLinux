@@ -12,7 +12,7 @@ local Linux = {
         Text = Color3.fromRGB(180, 180, 180),
         Toggle = Color3.fromRGB(40, 40, 40),
         TabInactive = Color3.fromRGB(25, 25, 25),
-        DropdownOption = Color3.fromRGB(35, 35, 35),
+        DropdownOption = Color3.fromRGB(25, 25, 25), -- Escurecido
         SelectedOption = Color3.fromRGB(255, 215, 0)
     }
 }
@@ -756,7 +756,7 @@ function Linux.Create(config)
 
             local DropFrame = Linux.Instance("ScrollingFrame", {
                 Parent = ElementContainer,
-                BackgroundColor3 = Color3.fromRGB(30, 30, 30),
+                BackgroundColor3 = Color3.fromRGB(20, 20, 20), -- Escurecido
                 BorderColor3 = Color3.fromRGB(50, 50, 50),
                 BorderSizePixel = 1,
                 Size = UDim2.new(1, -5, 0, 0),
@@ -950,7 +950,7 @@ function Linux.Create(config)
 
             local DropFrame = Linux.Instance("ScrollingFrame", {
                 Parent = ElementContainer,
-                BackgroundColor3 = Color3.fromRGB(30, 30, 30),
+                BackgroundColor3 = Color3.fromRGB(20, 20, 20), -- Escurecido
                 BorderColor3 = Color3.fromRGB(50, 50, 50),
                 BorderSizePixel = 1,
                 Size = UDim2.new(1, -5, 0, 0),
@@ -1148,7 +1148,7 @@ function Linux.Create(config)
                 Size = UDim2.new(0, 30, 1, 0),
                 Position = UDim2.new(1, -145, 0, 0),
                 Font = Enum.Font.Gotham,
-                Text = tostring(config.Min or 0),
+                Text = tostring(config.Default or config.Min or 0), -- Corrigido para exibir Default inicialmente
                 TextColor3 = Color3.fromRGB(255, 255, 255),
                 TextSize = 14,
                 TextXAlignment = Enum.TextXAlignment.Right,
@@ -1248,6 +1248,7 @@ function Linux.Create(config)
                 spawn(function() Linux:SafeCallback(config.Callback, Value) end)
             end
 
+            -- Inicializar o slider com o valor Default
             SetValue(Default)
 
             return {
@@ -1650,7 +1651,7 @@ function Linux.Create(config)
                 Position = UDim2.new(0, 5, 0, 5),
                 Font = Enum.Font.Gotham,
                 Text = config.Title or "Paragraph",
-                TextColor3 = Linux.Theme.Text,
+                TextColor3 = Color3.fromRGB(255, 255, 255), -- Corrigido para branco puro
                 TextSize = 16,
                 TextXAlignment = Enum.TextXAlignment.Left,
                 ZIndex = 1
