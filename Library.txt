@@ -13,7 +13,7 @@ local Linux = {
         Toggle = Color3.fromRGB(40, 40, 40),
         TabInactive = Color3.fromRGB(25, 25, 25),
         DropdownOption = Color3.fromRGB(35, 35, 35),
-        SelectedOption = Color3.fromRGB(255, 215, 0)
+        SelectedOption = Color3.fromRGB(135, 206, 250)
     }
 }
 
@@ -56,7 +56,7 @@ function Linux:Notify(config)
     local Notification = Linux.Instance("Frame", {
         Parent = NotificationHolder,
         BackgroundColor3 = Linux.Theme.Background,
-        BorderColor3 = Color3.fromRGB(255, 255, 255),
+        BorderColor3 = Color3.fromRGB(50, 50, 50),
         BorderSizePixel = 1,
         Size = UDim2.new(0, notificationWidth, 0, notificationHeight),
         Position = UDim2.new(1, 10, 1, -notificationHeight - 10),
@@ -157,7 +157,7 @@ function Linux.Create(config)
     local Main = Linux.Instance("Frame", {
         Parent = LinuxUI,
         BackgroundColor3 = Linux.Theme.Background,
-        BorderColor3 = Color3.fromRGB(255, 255, 255),
+        BorderColor3 = Color3.fromRGB(50, 50, 50),
         BorderSizePixel = 1,
         Size = uiSize,
         Position = UDim2.new(0.5, -uiSize.X.Offset / 2, 0.5, -uiSize.Y.Offset / 2),
@@ -174,7 +174,7 @@ function Linux.Create(config)
     local TopBar = Linux.Instance("Frame", {
         Parent = Main,
         BackgroundColor3 = Linux.Theme.Background,
-        BorderColor3 = Color3.fromRGB(255, 255, 255),
+        BorderColor3 = Color3.fromRGB(50, 50, 50),
         BorderSizePixel = 1,
         Size = UDim2.new(1, 0, 0, 25),
         ZIndex = 2
@@ -266,7 +266,7 @@ function Linux.Create(config)
         Parent = TabsBar,
         BackgroundTransparency = 1,
         Position = UDim2.new(0, 0, 0, 0),
-        Size = UDim2.new(1, 0, 1, 0),
+        Size = UDim2.new(1, 0, 1, -40),
         CanvasSize = UDim2.new(0, 0, 0, 0),
         AutomaticCanvasSize = Enum.AutomaticSize.Y,
         ScrollBarThickness = 0,
@@ -286,6 +286,16 @@ function Linux.Create(config)
         Parent = TabHolder,
         PaddingLeft = UDim.new(0, 5),
         PaddingTop = UDim.new(0, 5)
+    })
+
+    local ProfileIcon = Linux.Instance("ImageLabel", {
+        Parent = TabsBar,
+        BackgroundTransparency = 1,
+        Size = UDim2.new(0, 30, 0, 30),
+        Position = UDim2.new(0, 5, 1, -35),
+        Image = Players:GetUserThumbnailAsync(LocalPlayer.UserId, Enum.ThumbnailType.AvatarBust, Enum.ThumbnailSize.Size150x150),
+        ZIndex = 3,
+        BorderSizePixel = 0
     })
 
     local Content = Linux.Instance("Frame", {
@@ -344,7 +354,7 @@ function Linux.Create(config)
         local TabBtn = Linux.Instance("TextButton", {
             Parent = TabHolder,
             BackgroundColor3 = Linux.Theme.Element,
-            BorderColor3 = Color3.fromRGB(255, 255, 255),
+            BorderColor3 = Color3.fromRGB(50, 50, 50),
             BorderSizePixel = 1,
             Size = UDim2.new(1, -5, 0, 28),
             Font = Enum.Font.SourceSans,
@@ -364,12 +374,20 @@ function Linux.Create(config)
         local TabSeperator = Linux.Instance("Frame", {
             Name = "TabSeperator",
             Parent = TabBtn,
-            BackgroundColor3 = Linux.Theme.Accent,
             Size = UDim2.new(0, 0, 0.8, 0),
             Position = UDim2.new(0, 0, 0.1, 0),
             ZIndex = 2,
             BorderSizePixel = 0,
             ClipsDescendants = false
+        })
+
+        local Gradient = Linux.Instance("UIGradient", {
+            Parent = TabSeperator,
+            Color = ColorSequence.new({
+                ColorSequenceKeypoint.new(0, Color3.fromRGB(70, 130, 180)),
+                ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 105, 180))
+            }),
+            Rotation = 45
         })
 
         Linux.Instance("UICorner", {
@@ -481,7 +499,15 @@ function Linux.Create(config)
             if TabIcon then
                 TabIcon.ImageColor3 = Color3.fromRGB(255, 255, 255)
             end
+
+            local tweenInfo = TweenInfo.new(0.3, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut)
             TabSeperator.Size = UDim2.new(0, 4, 0.8, 0)
+            TabSeperator.Position = UDim2.new(0, 0, 0.1, 0)
+
+            TweenService:Create(TabSeperator, tweenInfo, {Position = UDim2.new(0, 0, 0.9, 0)}):Play()
+            task.wait(0.15)
+            TweenService:Create(TabSeperator, tweenInfo, {Position = UDim2.new(0, 0, 0.1, 0)}):Play()
+
             CurrentTab = tabIndex
         end
 
@@ -508,7 +534,7 @@ function Linux.Create(config)
             local BtnFrame = Linux.Instance("Frame", {
                 Parent = ElementContainer,
                 BackgroundColor3 = Linux.Theme.Element,
-                BorderColor3 = Color3.fromRGB(255, 255, 255),
+                BorderColor3 = Color3.fromRGB(50, 50, 50),
                 BorderSizePixel = 1,
                 Size = UDim2.new(1, -5, 0, 30),
                 ZIndex = 1,
@@ -536,7 +562,7 @@ function Linux.Create(config)
 
             Linux.Instance("UIPadding", {
                 Parent = Btn,
-                PaddingLeft = UDim.new(0, 5)
+                PaddingLeft = UDim2.new(0, 5)
             })
 
             Linux.Instance("ImageLabel", {
@@ -585,7 +611,7 @@ function Linux.Create(config)
             local Toggle = Linux.Instance("Frame", {
                 Parent = ElementContainer,
                 BackgroundColor3 = Linux.Theme.Element,
-                BorderColor3 = Color3.fromRGB(255, 255, 255),
+                BorderColor3 = Color3.fromRGB(50, 50, 50),
                 BorderSizePixel = 1,
                 Size = UDim2.new(1, -5, 0, 30),
                 ZIndex = 1,
@@ -691,7 +717,7 @@ function Linux.Create(config)
             local Dropdown = Linux.Instance("Frame", {
                 Parent = ElementContainer,
                 BackgroundColor3 = Linux.Theme.Element,
-                BorderColor3 = Color3.fromRGB(255, 255, 255),
+                BorderColor3 = Color3.fromRGB(50, 50, 50),
                 BorderSizePixel = 1,
                 Size = UDim2.new(1, -5, 0, 30),
                 ZIndex = 2,
@@ -741,7 +767,7 @@ function Linux.Create(config)
             local DropFrame = Linux.Instance("ScrollingFrame", {
                 Parent = ElementContainer,
                 BackgroundColor3 = Linux.Theme.Element,
-                BorderColor3 = Color3.fromRGB(255, 255, 255),
+                BorderColor3 = Color3.fromRGB(50, 50, 50),
                 BorderSizePixel = 1,
                 Size = UDim2.new(1, -5, 0, 0),
                 CanvasSize = UDim2.new(0, 0, 0, 0),
@@ -806,7 +832,7 @@ function Linux.Create(config)
                         local OptBtn = Linux.Instance("TextButton", {
                             Parent = DropFrame,
                             BackgroundColor3 = Linux.Theme.DropdownOption,
-                            BorderColor3 = Color3.fromRGB(255, 255, 255),
+                            BorderColor3 = Color3.fromRGB(50, 50, 50),
                             BorderSizePixel = 1,
                             Size = UDim2.new(1, -5, 0, 25),
                             Font = Enum.Font.SourceSans,
@@ -885,7 +911,7 @@ function Linux.Create(config)
             local MultiDropdown = Linux.Instance("Frame", {
                 Parent = ElementContainer,
                 BackgroundColor3 = Linux.Theme.Element,
-                BorderColor3 = Color3.fromRGB(255, 255, 255),
+                BorderColor3 = Color3.fromRGB(50, 50, 50),
                 BorderSizePixel = 1,
                 Size = UDim2.new(1, -5, 0, 30),
                 ZIndex = 2,
@@ -935,7 +961,7 @@ function Linux.Create(config)
             local DropFrame = Linux.Instance("ScrollingFrame", {
                 Parent = ElementContainer,
                 BackgroundColor3 = Linux.Theme.Element,
-                BorderColor3 = Color3.fromRGB(255, 255, 255),
+                BorderColor3 = Color3.fromRGB(50, 50, 50),
                 BorderSizePixel = 1,
                 Size = UDim2.new(1, -5, 0, 0),
                 CanvasSize = UDim2.new(0, 0, 0, 0),
@@ -1008,7 +1034,7 @@ function Linux.Create(config)
                         local OptBtn = Linux.Instance("TextButton", {
                             Parent = DropFrame,
                             BackgroundColor3 = Linux.Theme.DropdownOption,
-                            BorderColor3 = Color3.fromRGB(255, 255, 255),
+                            BorderColor3 = Color3.fromRGB(50, 50, 50),
                             BorderSizePixel = 1,
                             Size = UDim2.new(1, -5, 0, 25),
                             Font = Enum.Font.SourceSans,
@@ -1086,7 +1112,7 @@ function Linux.Create(config)
             local Slider = Linux.Instance("Frame", {
                 Parent = ElementContainer,
                 BackgroundColor3 = Linux.Theme.Element,
-                BorderColor3 = Color3.fromRGB(255, 255, 255),
+                BorderColor3 = Color3.fromRGB(50, 50, 50),
                 BorderSizePixel = 1,
                 Size = UDim2.new(1, -5, 0, 30),
                 ZIndex = 1,
@@ -1237,7 +1263,7 @@ function Linux.Create(config)
             local Input = Linux.Instance("Frame", {
                 Parent = ElementContainer,
                 BackgroundColor3 = Linux.Theme.Element,
-                BorderColor3 = Color3.fromRGB(255, 255, 255),
+                BorderColor3 = Color3.fromRGB(50, 50, 50),
                 BorderSizePixel = 1,
                 Size = UDim2.new(1, -5, 0, 30),
                 ZIndex = 1,
@@ -1336,7 +1362,7 @@ function Linux.Create(config)
             local LabelFrame = Linux.Instance("Frame", {
                 Parent = ElementContainer,
                 BackgroundColor3 = Linux.Theme.Element,
-                BorderColor3 = Color3.fromRGB(255, 255, 255),
+                BorderColor3 = Color3.fromRGB(50, 50, 50),
                 BorderSizePixel = 1,
                 Size = UDim2.new(1, -5, 0, 30),
                 ZIndex = 1,
@@ -1439,7 +1465,7 @@ function Linux.Create(config)
             local Keybind = Linux.Instance("Frame", {
                 Parent = ElementContainer,
                 BackgroundColor3 = Linux.Theme.Element,
-                BorderColor3 = Color3.fromRGB(255, 255, 255),
+                BorderColor3 = Color3.fromRGB(50, 50, 50),
                 BorderSizePixel = 1,
                 Size = UDim2.new(1, -5, 0, 30),
                 ZIndex = 1,
@@ -1605,7 +1631,7 @@ function Linux.Create(config)
             local ParagraphFrame = Linux.Instance("Frame", {
                 Parent = ElementContainer,
                 BackgroundColor3 = Linux.Theme.Element,
-                BorderColor3 = Color3.fromRGB(255, 255, 255),
+                BorderColor3 = Color3.fromRGB(50, 50, 50),
                 BorderSizePixel = 1,
                 Size = UDim2.new(1, -5, 0, 0),
                 AutomaticSize = Enum.AutomaticSize.Y,
@@ -1671,7 +1697,7 @@ function Linux.Create(config)
             local NotificationFrame = Linux.Instance("Frame", {
                 Parent = ElementContainer,
                 BackgroundColor3 = Linux.Theme.Element,
-                BorderColor3 = Color3.fromRGB(255, 255, 255),
+                BorderColor3 = Color3.fromRGB(50, 50, 50),
                 BorderSizePixel = 1,
                 Size = UDim2.new(1, -5, 0, 30),
                 ZIndex = 1,
