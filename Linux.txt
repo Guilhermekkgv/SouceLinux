@@ -4,8 +4,7 @@ local UserInputService = game:GetService("UserInputService")
 local Linux = {}
 Linux.__index = Linux
 
-local TWEEN_INFO = TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
-local SPRING_INFO = TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+local TWEEN_INFO = TweenInfo.new(0.3, Enum.EasingStyle.Quart)
 
 function Linux.Create(config)
     local GUI = {}
@@ -23,24 +22,12 @@ function Linux.Create(config)
     GUI.MainFrame.BorderSizePixel = 0
     GUI.MainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
     GUI.MainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
-    GUI.MainFrame.Size = UserInputService.TouchEnabled and UDim2.new(0, 330, 0, 280) or UDim2.new(0, 400, 0, 300)
+    GUI.MainFrame.Size = UserInputService.TouchEnabled and UDim2.new(0, 330, 0, 250) or UDim2.new(0, 450, 0, 280)
     GUI.MainFrame.Parent = GUI.ScreenGui
     
     local Corner = Instance.new("UICorner")
-    Corner.CornerRadius = UDim.new(0, 8)
+    Corner.CornerRadius = UDim.new(0, 6)
     Corner.Parent = GUI.MainFrame
-    
-    GUI.Shadow = Instance.new("ImageLabel")
-    GUI.Shadow.Name = "Shadow"
-    GUI.Shadow.AnchorPoint = Vector2.new(0.5, 0.5)
-    GUI.Shadow.BackgroundTransparency = 1
-    GUI.Shadow.Position = UDim2.new(0.5, 0, 0.5, 0)
-    GUI.Shadow.Size = UDim2.new(1, 30, 1, 30)
-    GUI.Shadow.ZIndex = -1
-    GUI.Shadow.Image = "rbxassetid://6014261993"
-    GUI.Shadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
-    GUI.Shadow.ImageTransparency = 0.5
-    GUI.Shadow.Parent = GUI.MainFrame
     
     GUI.TopBar = Instance.new("Frame")
     GUI.TopBar.Name = "TopBar"
@@ -50,7 +37,7 @@ function Linux.Create(config)
     GUI.TopBar.Parent = GUI.MainFrame
     
     local TopCorner = Instance.new("UICorner")
-    TopCorner.CornerRadius = UDim.new(0, 8)
+    TopCorner.CornerRadius = UDim.new(0, 6)
     TopCorner.Parent = GUI.TopBar
     
     GUI.Title = Instance.new("TextLabel")
@@ -99,7 +86,21 @@ function Linux.Create(config)
     
     GUI.Tabs = {}
     GUI.ActiveTab = nil
-    
+
+    function GUI:CreateElement(elementType, container)
+        local Element = Instance.new("Frame")
+        Element.Size = UDim2.new(1, 0, 0, 32)
+        Element.BackgroundColor3 = Color3.fromRGB(26, 26, 26)
+        Element.BorderSizePixel = 0
+        Element.Parent = container
+
+        local Corner = Instance.new("UICorner")
+        Corner.CornerRadius = UDim.new(0, 4)
+        Corner.Parent = Element
+
+        return Element
+    end
+
     function GUI:Tab(tabConfig)
         local Tab = {}
         Tab.Elements = {}
@@ -117,15 +118,16 @@ function Linux.Create(config)
         Tab.Button.AutoButtonColor = false
         
         local TabCorner = Instance.new("UICorner")
-        TabCorner.CornerRadius = UDim.new(0, 6)
+        TabCorner.CornerRadius = UDim.new(0, 4)
         TabCorner.Parent = Tab.Button
         
         Tab.Container = Instance.new("ScrollingFrame")
         Tab.Container.Name = tabConfig.Name.."Container"
-        Tab.Container.Size = UDim2.new(1, 0, 1, 0)
+        Tab.Container.Size = UDim2.new(1, -10, 1, -5)
+        Tab.Container.Position = UDim2.new(0, 5, 0, 5)
         Tab.Container.BackgroundTransparency = 1
         Tab.Container.ScrollBarThickness = 2
-        Tab.Container.ScrollBarImageColor3 = Color3.fromRGB(30, 30, 30)
+        Tab.Container.ScrollBarImageColor3 = Color3.fromRGB(255, 255, 255)
         Tab.Container.Visible = false
         Tab.Container.Parent = GUI.ContentContainer
         
@@ -134,96 +136,72 @@ function Linux.Create(config)
         ElementList.SortOrder = Enum.SortOrder.LayoutOrder
         ElementList.Padding = UDim.new(0, 5)
         
-        local ElementPadding = Instance.new("UIPadding")
-        ElementPadding.Parent = Tab.Container
-        ElementPadding.PaddingLeft = UDim.new(0, 5)
-        ElementPadding.PaddingRight = UDim.new(0, 5)
-        ElementPadding.PaddingTop = UDim.new(0, 5)
-        
         Tab.Button.MouseButton1Click:Connect(function()
             if GUI.ActiveTab then
-                TweenService:Create(GUI.ActiveTab.Button, TWEEN_INFO, {
-                    BackgroundColor3 = Color3.fromRGB(26, 26, 26)
-                }):Play()
+                GUI.ActiveTab.Button.BackgroundColor3 = Color3.fromRGB(26, 26, 26)
                 GUI.ActiveTab.Container.Visible = false
             end
             
             GUI.ActiveTab = Tab
             Tab.Container.Visible = true
-            
-            TweenService:Create(Tab.Button, TWEEN_INFO, {
-                BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-            }):Play()
+            Tab.Button.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
         end)
         
         function Tab:Button(config)
-            local Button = Instance.new("TextButton")
-            Button.Name = config.Name
-            Button.Size = UDim2.new(1, 0, 0, 32)
-            Button.BackgroundColor3 = Color3.fromRGB(26, 26, 26)
-            Button.Text = config.Name
-            Button.TextColor3 = Color3.fromRGB(255, 255, 255)
-            Button.TextSize = 12
-            Button.Font = Enum.Font.GothamMedium
-            Button.Parent = Tab.Container
-            Button.AutoButtonColor = false
+            local Button = GUI:CreateElement("Button", Tab.Container)
             
-            local ButtonCorner = Instance.new("UICorner")
-            ButtonCorner.CornerRadius = UDim.new(0, 6)
-            ButtonCorner.Parent = Button
+            local ButtonText = Instance.new("TextButton")
+            ButtonText.Name = "ButtonText"
+            ButtonText.Size = UDim2.new(1, 0, 1, 0)
+            ButtonText.BackgroundTransparency = 1
+            ButtonText.Text = config.Name
+            ButtonText.TextColor3 = Color3.fromRGB(255, 255, 255)
+            ButtonText.TextSize = 12
+            ButtonText.Font = Enum.Font.GothamMedium
+            ButtonText.Parent = Button
             
-            Button.MouseButton1Click:Connect(function()
-                TweenService:Create(Button, SPRING_INFO, {
+            ButtonText.MouseButton1Click:Connect(function()
+                TweenService:Create(Button, TWEEN_INFO, {
                     BackgroundColor3 = Color3.fromRGB(35, 35, 35)
                 }):Play()
-                task.wait(0.1)
+                wait(0.1)
                 TweenService:Create(Button, TWEEN_INFO, {
                     BackgroundColor3 = Color3.fromRGB(26, 26, 26)
                 }):Play()
                 config.Callback()
             end)
-            
-            return Button
         end
         
         function Tab:Toggle(config)
-            local Toggle = Instance.new("Frame")
-            Toggle.Name = config.Name
-            Toggle.Size = UDim2.new(1, 0, 0, 32)
-            Toggle.BackgroundColor3 = Color3.fromRGB(26, 26, 26)
-            Toggle.Parent = Tab.Container
-            
-            local ToggleCorner = Instance.new("UICorner")
-            ToggleCorner.CornerRadius = UDim.new(0, 6)
-            ToggleCorner.Parent = Toggle
+            local Toggle = GUI:CreateElement("Toggle", Tab.Container)
             
             local Title = Instance.new("TextLabel")
             Title.Size = UDim2.new(1, -50, 1, 0)
+            Title.Position = UDim2.new(0, 10, 0, 0)
             Title.BackgroundTransparency = 1
             Title.Text = config.Name
             Title.TextColor3 = Color3.fromRGB(255, 255, 255)
             Title.TextSize = 12
             Title.Font = Enum.Font.GothamMedium
             Title.TextXAlignment = Enum.TextXAlignment.Left
-            Title.Position = UDim2.new(0, 10, 0, 0)
             Title.Parent = Toggle
             
-            local ToggleButton = Instance.new("TextButton")
-            ToggleButton.Size = UDim2.new(0, 40, 0, 20)
-            ToggleButton.Position = UDim2.new(1, -45, 0.5, -10)
-            ToggleButton.BackgroundColor3 = Color3.fromRGB(22, 22, 22)
-            ToggleButton.Text = ""
-            ToggleButton.Parent = Toggle
+            local Switch = Instance.new("TextButton")
+            Switch.Size = UDim2.new(0, 40, 0, 20)
+            Switch.Position = UDim2.new(1, -45, 0.5, -10)
+            Switch.BackgroundColor3 = Color3.fromRGB(22, 22, 22)
+            Switch.Text = ""
+            Switch.Parent = Toggle
             
-            local ToggleButtonCorner = Instance.new("UICorner")
-            ToggleButtonCorner.CornerRadius = UDim.new(1, 0)
-            ToggleButtonCorner.Parent = ToggleButton
+            local SwitchCorner = Instance.new("UICorner")
+            SwitchCorner.CornerRadius = UDim.new(1, 0)
+            SwitchCorner.Parent = Switch
             
             local Ball = Instance.new("Frame")
             Ball.Size = UDim2.new(0, 16, 0, 16)
             Ball.Position = UDim2.new(0, 2, 0.5, -8)
             Ball.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-            Ball.Parent = ToggleButton
+            Ball.Parent = Switch
             
             local BallCorner = Instance.new("UICorner")
             BallCorner.CornerRadius = UDim.new(1, 0)
@@ -237,35 +215,85 @@ function Linux.Create(config)
                     BackgroundColor3 = Enabled and Color3.fromRGB(0, 255, 128) or Color3.fromRGB(255, 255, 255)
                 }):Play()
                 
-                TweenService:Create(ToggleButton, TWEEN_INFO, {
-                    BackgroundColor3 = Enabled and Color3.fromRGB(30, 30, 30) or Color3.fromRGB(22, 22, 22)
-                }):Play()
-                
                 config.Callback(Enabled)
             end
             
-            ToggleButton.MouseButton1Click:Connect(function()
+            Switch.MouseButton1Click:Connect(function()
                 Enabled = not Enabled
                 UpdateToggle()
             end)
             
             UpdateToggle()
-            return Toggle
+        end
+        
+        function Tab:Dropdown(config)
+            local Dropdown = GUI:CreateElement("Dropdown", Tab.Container)
+            Dropdown.Size = UDim2.new(1, 0, 0, 32)
+            Dropdown.ClipsDescendants = true
+            
+            local Title = Instance.new("TextLabel")
+            Title.Size = UDim2.new(1, -30, 1, 0)
+            Title.Position = UDim2.new(0, 10, 0, 0)
+            Title.BackgroundTransparency = 1
+            Title.Text = config.Name
+            Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+            Title.TextSize = 12
+            Title.Font = Enum.Font.GothamMedium
+            Title.TextXAlignment = Enum.TextXAlignment.Left
+            Title.Parent = Dropdown
+            
+            local Selected = config.Default or config.Options[1]
+            local IsOpen = false
+            
+            local OptionContainer = Instance.new("Frame")
+            OptionContainer.Size = UDim2.new(1, 0, 0, #config.Options * 32)
+            OptionContainer.Position = UDim2.new(0, 0, 0, 32)
+            OptionContainer.BackgroundTransparency = 1
+            OptionContainer.Parent = Dropdown
+            
+            local function UpdateDropdown()
+                Title.Text = config.Name..": "..Selected
+                
+                TweenService:Create(Dropdown, TWEEN_INFO, {
+                    Size = IsOpen and UDim2.new(1, 0, 0, 32 + (#config.Options * 32)) or UDim2.new(1, 0, 0, 32)
+                }):Play()
+            end
+            
+            for i, option in ipairs(config.Options) do
+                local Button = Instance.new("TextButton")
+                Button.Size = UDim2.new(1, 0, 0, 32)
+                Button.Position = UDim2.new(0, 0, 0, (i-1) * 32)
+                Button.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+                Button.Text = option
+                Button.TextColor3 = Color3.fromRGB(255, 255, 255)
+                Button.TextSize = 12
+                Button.Font = Enum.Font.GothamMedium
+                Button.Parent = OptionContainer
+                
+                Button.MouseButton1Click:Connect(function()
+                    Selected = option
+                    IsOpen = false
+                    UpdateDropdown()
+                    config.Callback(Selected)
+                end)
+            end
+            
+            Dropdown.InputBegan:Connect(function(input)
+                if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                    IsOpen = not IsOpen
+                    UpdateDropdown()
+                end
+            end)
+            
+            UpdateDropdown()
         end
         
         function Tab:Slider(config)
-            local Slider = Instance.new("Frame")
-            Slider.Name = config.Name
+            local Slider = GUI:CreateElement("Slider", Tab.Container)
             Slider.Size = UDim2.new(1, 0, 0, 45)
-            Slider.BackgroundColor3 = Color3.fromRGB(26, 26, 26)
-            Slider.Parent = Tab.Container
-            
-            local SliderCorner = Instance.new("UICorner")
-            SliderCorner.CornerRadius = UDim.new(0, 6)
-            SliderCorner.Parent = Slider
             
             local Title = Instance.new("TextLabel")
-            Title.Size = UDim2.new(1, -65, 0, 30)
+            Title.Size = UDim2.new(1, -50, 0, 32)
             Title.Position = UDim2.new(0, 10, 0, 0)
             Title.BackgroundTransparency = 1
             Title.Text = config.Name
@@ -276,8 +304,8 @@ function Linux.Create(config)
             Title.Parent = Slider
             
             local Value = Instance.new("TextLabel")
-            Value.Size = UDim2.new(0, 55, 0, 30)
-            Value.Position = UDim2.new(1, -60, 0, 0)
+            Value.Size = UDim2.new(0, 40, 0, 32)
+            Value.Position = UDim2.new(1, -45, 0, 0)
             Value.BackgroundTransparency = 1
             Value.Text = tostring(config.Default or config.Min)
             Value.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -291,9 +319,9 @@ function Linux.Create(config)
             SliderBar.BackgroundColor3 = Color3.fromRGB(22, 22, 22)
             SliderBar.Parent = Slider
             
-            local SliderBarCorner = Instance.new("UICorner")
-            SliderBarCorner.CornerRadius = UDim.new(1, 0)
-            SliderBarCorner.Parent = SliderBar
+            local SliderCorner = Instance.new("UICorner")
+            SliderCorner.CornerRadius = UDim.new(1, 0)
+            SliderCorner.Parent = SliderBar
             
             local Progress = Instance.new("Frame")
             Progress.Size = UDim2.new(0.5, 0, 1, 0)
@@ -304,20 +332,19 @@ function Linux.Create(config)
             ProgressCorner.CornerRadius = UDim.new(1, 0)
             ProgressCorner.Parent = Progress
             
-            local MinValue = config.Min or 0
-            local MaxValue = config.Max or 100
-            local CurrentValue = config.Default or MinValue
+            local Min, Max = config.Min or 0, config.Max or 100
+            local Current = config.Default or Min
             
-            local function UpdateSlider(input)
+            local function Update(input)
                 local pos = math.clamp((input - SliderBar.AbsolutePosition.X) / SliderBar.AbsoluteSize.X, 0, 1)
-                CurrentValue = math.floor(MinValue + (MaxValue - MinValue) * pos)
+                Current = math.floor(Min + (Max - Min) * pos)
                 
                 TweenService:Create(Progress, TWEEN_INFO, {
                     Size = UDim2.new(pos, 0, 1, 0)
                 }):Play()
                 
-                Value.Text = tostring(CurrentValue)
-                config.Callback(CurrentValue)
+                Value.Text = tostring(Current)
+                config.Callback(Current)
             end
             
             local dragging = false
@@ -325,13 +352,13 @@ function Linux.Create(config)
             SliderBar.InputBegan:Connect(function(input)
                 if input.UserInputType == Enum.UserInputType.MouseButton1 then
                     dragging = true
-                    UpdateSlider(input.Position.X)
+                    Update(input.Position.X)
                 end
             end)
             
             UserInputService.InputChanged:Connect(function(input)
                 if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
-                    UpdateSlider(input.Position.X)
+                    Update(input.Position.X)
                 end
             end)
             
@@ -341,107 +368,16 @@ function Linux.Create(config)
                 end
             end)
             
-            local initialPos = (CurrentValue - MinValue) / (MaxValue - MinValue)
+            local initialPos = (Current - Min) / (Max - Min)
             Progress.Size = UDim2.new(initialPos, 0, 1, 0)
-            
-            return Slider
-        end
-        
-        function Tab:Dropdown(config)
-            local Dropdown = Instance.new("Frame")
-            Dropdown.Name = config.Name
-            Dropdown.Size = UDim2.new(1, 0, 0, 32)
-            Dropdown.BackgroundColor3 = Color3.fromRGB(26, 26, 26)
-            Dropdown.ClipsDescendants = true
-            Dropdown.Parent = Tab.Container
-            
-            local DropdownCorner = Instance.new("UICorner")
-            DropdownCorner.CornerRadius = UDim.new(0, 6)
-            DropdownCorner.Parent = Dropdown
-            
-            local Title = Instance.new("TextLabel")
-            Title.Size = UDim2.new(1, -30, 1, 0)
-            Title.Position = UDim2.new(0, 10, 0, 0)
-            Title.BackgroundTransparency = 1
-            Title.Text = config.Name
-            Title.TextColor3 = Color3.fromRGB(255, 255, 255)
-            Title.TextSize = 12
-            Title.Font = Enum.Font.GothamMedium
-            Title.TextXAlignment = Enum.TextXAlignment.Left
-            Title.Parent = Dropdown
-            
-            local Arrow = Instance.new("ImageLabel")
-            Arrow.Size = UDim2.new(0, 20, 0, 20)
-            Arrow.Position = UDim2.new(1, -25, 0.5, -10)
-            Arrow.BackgroundTransparency = 1
-            Arrow.Image = "rbxassetid://7072706796"
-            Arrow.Parent = Dropdown
-            
-            local OptionContainer = Instance.new("Frame")
-            OptionContainer.Size = UDim2.new(1, 0, 0, 0)
-            OptionContainer.Position = UDim2.new(0, 0, 0, 32)
-            OptionContainer.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-            OptionContainer.BorderSizePixel = 0
-            OptionContainer.Parent = Dropdown
-            
-            local OptionList = Instance.new("UIListLayout")
-            OptionList.Parent = OptionContainer
-            OptionList.SortOrder = Enum.SortOrder.LayoutOrder
-            
-            local isOpen = false
-            local selected = config.Default or config.Options[1]
-            
-            local function UpdateDropdown()
-                Title.Text = config.Name .. ": " .. selected
-                
-                local targetSize = isOpen and UDim2.new(1, 0, 0, #config.Options * 30 + 32) or UDim2.new(1, 0, 0, 32)
-                local targetRotation = isOpen and 180 or 0
-                
-                TweenService:Create(Dropdown, TWEEN_INFO, {
-                    Size = targetSize
-                }):Play()
-                
-                TweenService:Create(Arrow, TWEEN_INFO, {
-                    Rotation = targetRotation
-                }):Play()
-            end
-            
-            for _, option in ipairs(config.Options) do
-                local OptionButton = Instance.new("TextButton")
-                OptionButton.Size = UDim2.new(1, 0, 0, 30)
-                OptionButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-                OptionButton.Text = option
-                OptionButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-                OptionButton.TextSize = 12
-                OptionButton.Font = Enum.Font.GothamMedium
-                OptionButton.Parent = OptionContainer
-                OptionButton.AutoButtonColor = false
-                
-                OptionButton.MouseButton1Click:Connect(function()
-                    selected = option
-                    isOpen = false
-                    UpdateDropdown()
-                    config.Callback(option)
-                end)
-            end
-            
-            Dropdown.InputBegan:Connect(function(input)
-                if input.UserInputType == Enum.UserInputType.MouseButton1 then
-                    isOpen = not isOpen
-                    UpdateDropdown()
-                end
-            end)
-            
-            UpdateDropdown()
-            return Dropdown
         end
         
         ElementList:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-            Tab.Container.CanvasSize = UDim2.new(0, 0, 0, ElementList.AbsoluteContentSize.Y + 10)
+            Tab.Container.CanvasSize = UDim2.new(0, 0, 0, ElementList.AbsoluteContentSize.Y + 5)
         end)
         
         if #GUI.Tabs == 0 then
-            Tab.Button.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+            Tab.Button.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
             Tab.Container.Visible = true
             GUI.ActiveTab = Tab
         end
@@ -451,7 +387,7 @@ function Linux.Create(config)
     end
     
     TabList:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-        GUI.TabContainer.CanvasSize = UDim2.new(0, 0, 0, TabList.AbsoluteContentSize.Y + 10)
+        GUI.TabContainer.CanvasSize = UDim2.new(0, 0, 0, TabList.AbsoluteContentSize.Y + 5)
     end)
     
     return GUI
