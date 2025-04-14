@@ -1,0 +1,420 @@
+-- Linux UI Library
+-- Created by Linux
+-- Version 2.0
+
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
+
+local Linux = {}
+Linux.__index = Linux
+
+-- Configurações de animação
+local TWEEN_INFO = TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
+local SPRING_INFO = TweenInfo.new(0.5, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out)
+
+function Linux.Create(config)
+    local GUI = {}
+    setmetatable(GUI, Linux)
+    
+    -- Criação da ScreenGui principal
+    GUI.ScreenGui = Instance.new("ScreenGui")
+    GUI.ScreenGui.Name = config.Name or "LinuxUI"
+    GUI.ScreenGui.ResetOnSpawn = false
+    GUI.ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    GUI.ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+    
+    -- Frame principal
+    GUI.MainFrame = Instance.new("Frame")
+    GUI.MainFrame.Name = "MainFrame"
+    GUI.MainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+    GUI.MainFrame.BorderSizePixel = 0
+    GUI.MainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
+    GUI.MainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+    
+    -- Aplicar tamanho responsivo
+    local function updateSize()
+        if UserInputService.TouchEnabled then
+            GUI.MainFrame.Size = config.SizeMobile or UDim2.new(0, 550, 0, 345)
+        else
+            GUI.MainFrame.Size = config.SizePC or UDim2.new(0, 600, 0, 400)
+        end
+    end
+    updateSize()
+    GUI.MainFrame.Parent = GUI.ScreenGui
+    
+    -- Barra de título
+    GUI.TitleBar = Instance.new("Frame")
+    GUI.TitleBar.Name = "TitleBar"
+    GUI.TitleBar.Size = UDim2.new(1, 0, 0, 40)
+    GUI.TitleBar.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    GUI.TitleBar.BorderSizePixel = 0
+    GUI.TitleBar.Parent = GUI.MainFrame
+    
+    -- Título
+    GUI.Title = Instance.new("TextLabel")
+    GUI.Title.Name = "Title"
+    GUI.Title.Size = UDim2.new(1, -10, 1, 0)
+    GUI.Title.Position = UDim2.new(0, 10, 0, 0)
+    GUI.Title.BackgroundTransparency = 1
+    GUI.Title.Text = config.Name or "Linux UI"
+    GUI.Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+    GUI.Title.TextSize = 18
+    GUI.Title.Font = Enum.Font.GothamBold
+    GUI.Title.TextXAlignment = Enum.TextXAlignment.Left
+    GUI.Title.Parent = GUI.TitleBar
+    
+    -- Container de abas
+    GUI.TabContainer = Instance.new("Frame")
+    GUI.TabContainer.Name = "TabContainer"
+    GUI.TabContainer.Size = UDim2.new(0, 150, 1, -40)
+    GUI.TabContainer.Position = UDim2.new(0, 0, 0, 40)
+    GUI.TabContainer.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    GUI.TabContainer.BorderSizePixel = 0
+    GUI.TabContainer.Parent = GUI.MainFrame
+    
+    -- ScrollingFrame para as abas
+    GUI.TabScroll = Instance.new("ScrollingFrame")
+    GUI.TabScroll.Name = "TabScroll"
+    GUI.TabScroll.Size = UDim2.new(1, 0, 1, 0)
+    GUI.TabScroll.BackgroundTransparency = 1
+    GUI.TabScroll.ScrollBarThickness = 2
+    GUI.TabScroll.ScrollBarImageColor3 = Color3.fromRGB(45, 45, 45)
+    GUI.TabScroll.Parent = GUI.TabContainer
+    
+    -- Layout automático para as abas
+    GUI.TabList = Instance.new("UIListLayout")
+    GUI.TabList.Parent = GUI.TabScroll
+    GUI.TabList.SortOrder = Enum.SortOrder.LayoutOrder
+    GUI.TabList.Padding = UDim.new(0, 5)
+    
+    -- Container de conteúdo
+    GUI.ContentContainer = Instance.new("Frame")
+    GUI.ContentContainer.Name = "ContentContainer"
+    GUI.ContentContainer.Size = UDim2.new(1, -150, 1, -40)
+    GUI.ContentContainer.Position = UDim2.new(0, 150, 0, 40)
+    GUI.ContentContainer.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+    GUI.ContentContainer.BorderSizePixel = 0
+    GUI.ContentContainer.Parent = GUI.MainFrame
+    
+    GUI.Tabs = {}
+    GUI.CurrentTab = nil
+    
+    function GUI:Tab(tabConfig)
+        local Tab = {}
+        
+        -- Botão da aba
+        Tab.Button = Instance.new("TextButton")
+        Tab.Button.Name = tabConfig.Name
+        Tab.Button.Size = UDim2.new(1, -10, 0, 35)
+        Tab.Button.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+        Tab.Button.BorderSizePixel = 0
+        Tab.Button.Text = tabConfig.Name
+        Tab.Button.TextColor3 = Color3.fromRGB(255, 255, 255)
+        Tab.Button.TextSize = 14
+        Tab.Button.Font = Enum.Font.Gotham
+        Tab.Button.Parent = GUI.TabScroll
+        
+        -- Container de conteúdo da aba
+        Tab.Content = Instance.new("ScrollingFrame")
+        Tab.Content.Name = tabConfig.Name.."Content"
+        Tab.Content.Size = UDim2.new(1, 0, 1, 0)
+        Tab.Content.BackgroundTransparency = 1
+        Tab.Content.ScrollBarThickness = 2
+        Tab.Content.ScrollBarImageColor3 = Color3.fromRGB(45, 45, 45)
+        Tab.Content.Visible = false
+        Tab.Content.Parent = GUI.ContentContainer
+        
+        -- Layout automático para os elementos
+        Tab.Layout = Instance.new("UIListLayout")
+        Tab.Layout.Parent = Tab.Content
+        Tab.Layout.SortOrder = Enum.SortOrder.LayoutOrder
+        Tab.Layout.Padding = UDim.new(0, 5)
+        
+        -- Padding para os elementos
+        Tab.Padding = Instance.new("UIPadding")
+        Tab.Padding.Parent = Tab.Content
+        Tab.Padding.PaddingLeft = UDim.new(0, 10)
+        Tab.Padding.PaddingRight = UDim.new(0, 10)
+        Tab.Padding.PaddingTop = UDim.new(0, 10)
+        
+        -- Atualização automática do tamanho do ScrollingFrame
+        Tab.Layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+            Tab.Content.CanvasSize = UDim2.new(0, 0, 0, Tab.Layout.AbsoluteContentSize.Y + 20)
+        end)
+        
+        -- Sistema de seleção de abas
+        Tab.Button.MouseButton1Click:Connect(function()
+            if GUI.CurrentTab then
+                TweenService:Create(GUI.CurrentTab.Button, TWEEN_INFO, {
+                    BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+                }):Play()
+                GUI.CurrentTab.Content.Visible = false
+            end
+            
+            GUI.CurrentTab = Tab
+            Tab.Content.Visible = true
+            
+            TweenService:Create(Tab.Button, TWEEN_INFO, {
+                BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+            }):Play()
+        end)
+        
+        -- Funções para criar elementos
+        function Tab:CreateElement(elementType, config)
+            local Element = Instance.new("Frame")
+            Element.Size = UDim2.new(1, 0, 0, 35)
+            Element.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+            Element.BorderSizePixel = 0
+            Element.Parent = Tab.Content
+            
+            return Element
+        end
+        
+        function Tab:Button(config)
+            local Button = Tab:CreateElement("Button")
+            
+            local ButtonInner = Instance.new("TextButton")
+            ButtonInner.Name = "Button"
+            ButtonInner.Size = UDim2.new(1, 0, 1, 0)
+            ButtonInner.BackgroundTransparency = 1
+            ButtonInner.Text = config.Name
+            ButtonInner.TextColor3 = Color3.fromRGB(255, 255, 255)
+            ButtonInner.TextSize = 14
+            ButtonInner.Font = Enum.Font.Gotham
+            ButtonInner.Parent = Button
+            
+            ButtonInner.MouseButton1Click:Connect(function()
+                TweenService:Create(Button, SPRING_INFO, {
+                    BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+                }):Play()
+                task.wait(0.1)
+                TweenService:Create(Button, TWEEN_INFO, {
+                    BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+                }):Play()
+                
+                config.Callback()
+            end)
+        end
+        
+        function Tab:Toggle(config)
+            local Toggle = Tab:CreateElement("Toggle")
+            local Enabled = config.Default or false
+            
+            local ToggleButton = Instance.new("TextButton")
+            ToggleButton.Name = "Toggle"
+            ToggleButton.Size = UDim2.new(1, -50, 1, 0)
+            ToggleButton.Position = UDim2.new(0, 0, 0, 0)
+            ToggleButton.BackgroundTransparency = 1
+            ToggleButton.Text = config.Name
+            ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+            ToggleButton.TextSize = 14
+            ToggleButton.Font = Enum.Font.Gotham
+            ToggleButton.TextXAlignment = Enum.TextXAlignment.Left
+            ToggleButton.Parent = Toggle
+            
+            local Indicator = Instance.new("Frame")
+            Indicator.Name = "Indicator"
+            Indicator.Size = UDim2.new(0, 40, 0, 20)
+            Indicator.Position = UDim2.new(1, -45, 0.5, -10)
+            Indicator.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+            Indicator.BorderSizePixel = 0
+            Indicator.Parent = Toggle
+            
+            local Ball = Instance.new("Frame")
+            Ball.Name = "Ball"
+            Ball.Size = UDim2.new(0, 16, 0, 16)
+            Ball.Position = UDim2.new(0, 2, 0.5, -8)
+            Ball.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Ball.BorderSizePixel = 0
+            Ball.Parent = Indicator
+            
+            local function updateToggle()
+                TweenService:Create(Ball, TWEEN_INFO, {
+                    Position = Enabled and UDim2.new(1, -18, 0.5, -8) or UDim2.new(0, 2, 0.5, -8),
+                    BackgroundColor3 = Enabled and Color3.fromRGB(0, 255, 128) or Color3.fromRGB(255, 255, 255)
+                }):Play()
+                
+                TweenService:Create(Indicator, TWEEN_INFO, {
+                    BackgroundColor3 = Enabled and Color3.fromRGB(40, 40, 40) or Color3.fromRGB(30, 30, 30)
+                }):Play()
+                
+                config.Callback(Enabled)
+            end
+            
+            ToggleButton.MouseButton1Click:Connect(function()
+                Enabled = not Enabled
+                updateToggle()
+            end)
+            
+            updateToggle()
+        end
+        
+        function Tab:Slider(config)
+            local Slider = Tab:CreateElement("Slider")
+            Slider.Size = UDim2.new(1, 0, 0, 45)
+            
+            local Title = Instance.new("TextLabel")
+            Title.Name = "Title"
+            Title.Size = UDim2.new(1, 0, 0, 20)
+            Title.BackgroundTransparency = 1
+            Title.Text = config.Name
+            Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+            Title.TextSize = 14
+            Title.Font = Enum.Font.Gotham
+            Title.TextXAlignment = Enum.TextXAlignment.Left
+            Title.Parent = Slider
+            
+            local SliderBar = Instance.new("Frame")
+            SliderBar.Name = "SliderBar"
+            SliderBar.Size = UDim2.new(1, 0, 0, 4)
+            SliderBar.Position = UDim2.new(0, 0, 0.7, 0)
+            SliderBar.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+            SliderBar.BorderSizePixel = 0
+            SliderBar.Parent = Slider
+            
+            local Fill = Instance.new("Frame")
+            Fill.Name = "Fill"
+            Fill.Size = UDim2.new(0.5, 0, 1, 0)
+            Fill.BackgroundColor3 = Color3.fromRGB(0, 255, 128)
+            Fill.BorderSizePixel = 0
+            Fill.Parent = SliderBar
+            
+            local Ball = Instance.new("Frame")
+            Ball.Name = "Ball"
+            Ball.Size = UDim2.new(0, 12, 0, 12)
+            Ball.Position = UDim2.new(0.5, -6, 0.5, -6)
+            Ball.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+            Ball.BorderSizePixel = 0
+            Ball.Parent = Fill
+            
+            local ValueLabel = Instance.new("TextLabel")
+            ValueLabel.Name = "Value"
+            ValueLabel.Size = UDim2.new(0, 50, 0, 20)
+            ValueLabel.Position = UDim2.new(1, -50, 0, 0)
+            ValueLabel.BackgroundTransparency = 1
+            ValueLabel.Text = tostring(config.Default or config.Min)
+            ValueLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+            ValueLabel.TextSize = 14
+            ValueLabel.Font = Enum.Font.Gotham
+            ValueLabel.Parent = Slider
+            
+            local MinValue = config.Min or 0
+            local MaxValue = config.Max or 100
+            local CurrentValue = config.Default or MinValue
+            
+            local function updateSlider(input)
+                local pos = math.clamp((input - SliderBar.AbsolutePosition.X) / SliderBar.AbsoluteSize.X, 0, 1)
+                CurrentValue = math.floor(MinValue + (MaxValue - MinValue) * pos)
+                
+                TweenService:Create(Fill, TWEEN_INFO, {
+                    Size = UDim2.new(pos, 0, 1, 0)
+                }):Play()
+                
+                ValueLabel.Text = tostring(CurrentValue)
+                config.Callback(CurrentValue)
+            end
+            
+            local dragging = false
+            
+            Ball.InputBegan:Connect(function(input)
+                if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                    dragging = true
+                end
+            end)
+            
+            UserInputService.InputChanged:Connect(function(input)
+                if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+                    updateSlider(input.Position.X)
+                end
+            end)
+            
+            UserInputService.InputEnded:Connect(function(input)
+                if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                    dragging = false
+                end
+            end)
+            
+            -- Configurar valor inicial
+            local initialPos = (CurrentValue - MinValue) / (MaxValue - MinValue)
+            Fill.Size = UDim2.new(initialPos, 0, 1, 0)
+        end
+        
+        function Tab:Dropdown(config)
+            local Dropdown = Tab:CreateElement("Dropdown")
+            Dropdown.Size = UDim2.new(1, 0, 0, 35)
+            
+            local DropdownButton = Instance.new("TextButton")
+            DropdownButton.Name = "DropdownButton"
+            DropdownButton.Size = UDim2.new(1, 0, 1, 0)
+            DropdownButton.BackgroundTransparency = 1
+            DropdownButton.Text = config.Name
+            DropdownButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+            DropdownButton.TextSize = 14
+            DropdownButton.Font = Enum.Font.Gotham
+            DropdownButton.Parent = Dropdown
+            
+            local OptionContainer = Instance.new("Frame")
+            OptionContainer.Name = "OptionContainer"
+            OptionContainer.Size = UDim2.new(1, 0, 0, 0)
+            OptionContainer.Position = UDim2.new(0, 0, 1, 0)
+            OptionContainer.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+            OptionContainer.BorderSizePixel = 0
+            OptionContainer.ClipsDescendants = true
+            OptionContainer.Parent = Dropdown
+            
+            local OptionList = Instance.new("UIListLayout")
+            OptionList.Parent = OptionContainer
+            OptionList.SortOrder = Enum.SortOrder.LayoutOrder
+            
+            local isOpen = false
+            local selectedOption = config.Default or config.Options[1]
+            
+            local function updateDropdown()
+                local targetSize = isOpen and UDim2.new(1, 0, 0, #config.Options * 25) or UDim2.new(1, 0, 0, 0)
+                
+                TweenService:Create(OptionContainer, TWEEN_INFO, {
+                    Size = targetSize
+                }):Play()
+                
+                DropdownButton.Text = config.Name .. ": " .. selectedOption
+            end
+            
+            for _, option in ipairs(config.Options) do
+                local OptionButton = Instance.new("TextButton")
+                OptionButton.Size = UDim2.new(1, 0, 0, 25)
+                OptionButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+                OptionButton.BorderSizePixel = 0
+                OptionButton.Text = option
+                OptionButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+                OptionButton.TextSize = 14
+                OptionButton.Font = Enum.Font.Gotham
+                OptionButton.Parent = OptionContainer
+                
+                OptionButton.MouseButton1Click:Connect(function()
+                    selectedOption = option
+                    isOpen = false
+                    updateDropdown()
+                    config.Callback(option)
+                end)
+            end
+            
+            DropdownButton.MouseButton1Click:Connect(function()
+                isOpen = not isOpen
+                updateDropdown()
+            end)
+            
+            updateDropdown()
+        end
+        
+        return Tab
+    end
+    
+    -- Atualizar canvas do TabScroll automaticamente
+    GUI.TabList:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+        GUI.TabScroll.CanvasSize = UDim2.new(0, 0, 0, GUI.TabList.AbsoluteContentSize.Y + 10)
+    end)
+    
+    return GUI
+end
+
+return Linux
