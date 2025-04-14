@@ -14,7 +14,7 @@ local Linux = {
         TabInactive = Color3.fromRGB(25, 25, 25),
         DropdownOption = Color3.fromRGB(25, 25, 25),
         SelectedOption = Color3.fromRGB(255, 215, 0),
-        TextBox = Color3.fromRGB(30, 30, 30)
+        TextBox = Color3.fromRGB(25, 25, 25)
     }
 }
 
@@ -1286,7 +1286,7 @@ function Linux.Create(config)
                 Parent = Input,
                 BackgroundColor3 = Linux.Theme.TextBox,
                 Size = UDim2.new(0.3, -10, 0, 20),
-                Position = UDim2.new(0.45, 5, 0.5, -10),
+                Position = UDim2.new(1, -75, 0.5, -10),
                 Font = Enum.Font.Gotham,
                 Text = config.Default or "",
                 PlaceholderText = config.Placeholder or "Text Here",
@@ -1643,7 +1643,7 @@ function Linux.Create(config)
                 BackgroundTransparency = 1,
                 Size = UDim2.new(1, -10, 0, 20),
                 Position = UDim2.new(0, 5, 0, 5),
-                Font = Enum.Font.Gotham,
+                Font = Enum.Font.GothamBold,
                 Text = config.Title or "Paragraph",
                 TextColor3 = Color3.fromRGB(255, 255, 255),
                 TextSize = 16,
@@ -1656,7 +1656,7 @@ function Linux.Create(config)
                 BackgroundTransparency = 1,
                 Size = UDim2.new(1, -10, 0, 0),
                 Position = UDim2.new(0, 5, 0, 25),
-                Font = Enum.Font.GothamBold,
+                Font = Enum.Font.Gotham,
                 Text = config.Content or "Content",
                 TextColor3 = Linux.Theme.Text,
                 TextSize = 14,
